@@ -23,8 +23,8 @@ public class DrawingPanel extends JPanel {
     /**
      * default width and height
      */
-    final static int WIDTH = 800;
-    final static int HEIGHT = 600;
+    private final int WIDTH = 800;
+    private final int HEIGHT = 600;
 
     /**
      * the offscreen image
