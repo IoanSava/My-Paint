@@ -1,5 +1,8 @@
 package gui.shapes;
 
+import lombok.Getter;
+
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 /**
@@ -8,8 +11,11 @@ import java.awt.geom.Ellipse2D;
  *
  * @author Ioan Sava
  */
-public class NodeShape extends Ellipse2D.Double {
-    public NodeShape(double x0, double y0, double radius) {
+@Getter
+public class NodeShape extends Ellipse2D.Double implements Shape {
+    private Color color;
+    public NodeShape(double x0, double y0, double radius, Color color) {
         super(x0 - radius / 2, y0 - radius / 2, radius, radius);
+        this.color = color;
     }
 }

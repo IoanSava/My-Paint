@@ -3,12 +3,15 @@ package gui.panels;
 import gui.MainFrame;
 import gui.shapes.NodeShape;
 import gui.shapes.RegularPolygon;
+import gui.shapes.Shape;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -35,6 +38,11 @@ public class DrawingPanel extends JPanel {
      * the "tools" needed to draw in the image
      */
     Graphics2D graphics;
+
+    /**
+     * list of drawn shapes
+     */
+    private List<Shape> shapes = new ArrayList<>();
 
     public DrawingPanel(MainFrame frame) {
         this.frame = frame;
@@ -92,14 +100,19 @@ public class DrawingPanel extends JPanel {
     private void drawShape(int x, int y) {
         Random random = new Random();
         int radius = random.nextInt(90) + 30; //generate a random angle
-        graphics.setColor(getShapeColor());
+        Color color = getShapeColor();
+        graphics.setColor(color);
 
+        Shape shape;
         if (frame.getShapeMangerPanel().getRegularPolygonRadioButton().isSelected()) {
             int sides = (int) frame.getConfigurationPanel().getSidesField().getValue();
-            graphics.fill(new RegularPolygon(x, y, radius, sides));
+            shape = new RegularPolygon(x, y, radius, sides, color);
         } else {
-            graphics.fill(new NodeShape(x, y, radius));
+            shape = new NodeShape(x, y, radius, color);
         }
+
+        graphics.fill((java.awt.Shape) shape);
+        shapes.add(shape);
     }
 
     @Override
@@ -110,18 +123,43 @@ public class DrawingPanel extends JPanel {
         g.drawImage(image, 0, 0, this);
     }
 
-    public void resetPanel() {
+    void fillPanelWithWhite() {
         graphics.setColor(Color.WHITE); //fill the image with white
         graphics.fillRect(0, 0, WIDTH, HEIGHT);
         repaint();
     }
 
+    void resetPanel() {
+        shapes.clear();
+        fillPanelWithWhite();
+    }
+
     /**
      * Load an image into the canvas
      */
-    public void loadImage(BufferedImage image) {
+    void loadImage(BufferedImage image) {
         this.image = image;
         graphics = image.createGraphics();
         repaint();
+    }
+
+    void redrawCanvas() {
+        fillPanelWithWhite();
+        for (Shape shape : this.shapes) {
+            graphics.setColor(shape.getColor());
+            graphics.fill((java.awt.Shape) shape);
+        }
+    }
+
+    /**
+     * Remove last drawn shape
+     * from the drawing canvas
+     */
+    void removeLastShape() {
+        int numberOfShapes = this.shapes.size();
+        if (numberOfShapes > 0) {
+            this.shapes.remove(numberOfShapes - 1);
+            redrawCanvas();
+        }
     }
 }
